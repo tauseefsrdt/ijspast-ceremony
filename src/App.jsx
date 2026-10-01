@@ -117,6 +117,9 @@ export default function App() {
   const curtainLeftRef = useRef(null);
   const curtainRightRef = useRef(null);
   const drumIntervalRef = useRef(null);
+  const celebrationIntervalRef = useRef(null);
+  const celebrationTimeoutRef = useRef(null);
+  const [isCelebrating, setIsCelebrating] = useState(false);
 
   // Animated BG element refs
   const orb1Ref = useRef(null);
@@ -363,6 +366,9 @@ export default function App() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       ctx.revert();
+      if (celebrationIntervalRef.current) clearInterval(celebrationIntervalRef.current);
+      if (celebrationTimeoutRef.current) clearTimeout(celebrationTimeoutRef.current);
+      try { confetti.reset(); } catch (e) {}
     };
   }, []);
 
@@ -543,6 +549,12 @@ export default function App() {
     const animationEnd = Date.now() + duration;
     const luxuryColors = ['#f59e0b', '#d97706', '#fbbf24', '#fef08a', '#0284c7', '#0369a1', '#ffffff', '#e11d48'];
 
+    setIsCelebrating(true);
+    if (celebrationTimeoutRef.current) clearTimeout(celebrationTimeoutRef.current);
+    celebrationTimeoutRef.current = setTimeout(() => {
+      setIsCelebrating(false);
+    }, duration);
+
     // Initial Explosive Blast
     confetti({
       particleCount: 160,
@@ -554,11 +566,13 @@ export default function App() {
     });
 
     // Continuous 10-second fireworks & cascading side cannons
-    const interval = setInterval(() => {
+    celebrationIntervalRef.current = setInterval(() => {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
-        return clearInterval(interval);
+        clearInterval(celebrationIntervalRef.current);
+        celebrationIntervalRef.current = null;
+        return;
       }
 
       const particleCount = 20 * (timeLeft / duration);
@@ -606,6 +620,17 @@ export default function App() {
   };
 
   const handleReset = () => {
+    if (celebrationIntervalRef.current) {
+      clearInterval(celebrationIntervalRef.current);
+      celebrationIntervalRef.current = null;
+    }
+    if (celebrationTimeoutRef.current) {
+      clearTimeout(celebrationTimeoutRef.current);
+      celebrationTimeoutRef.current = null;
+    }
+    setIsCelebrating(false);
+    try { confetti.reset(); } catch (e) {}
+
     setIsCut(false);
     setIsAnimating(false);
     setShowFlash(false);
@@ -1126,9 +1151,10 @@ export default function App() {
 
                 <button
                   onClick={handleReset}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-700 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm hover:border-amber-400"
+                  disabled={isCelebrating}
+                  className={`px-4 py-2 rounded-full border-2 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all inline-flex items-center gap-1.5 shadow-sm ${isCelebrating ? 'bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed' : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-700 cursor-pointer hover:border-amber-400'}`}
                 >
-                  <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+                  <RotateCcw className={`w-3.5 h-3.5 ${isCelebrating ? 'text-slate-400' : 'text-amber-600'}`} />
                   <span>Replay Ceremony</span>
                 </button>
               </div>
