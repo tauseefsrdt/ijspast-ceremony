@@ -478,10 +478,12 @@ export default function App() {
         setIsCut(true);
         setIsAnimating(false);
         setShowCeremonyDetails(true);
-        gsap.fromTo('.portal-reveal-box',
-          { opacity: 0, y: 20, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }
-        );
+        setTimeout(() => {
+          gsap.fromTo('.portal-reveal-box',
+            { opacity: 0, y: 30, scale: 0.9 },
+            { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: 'back.out(1.5)' }
+          );
+        }, 50);
       });
 
     // Play subtle high-end celebration audio chime synthesized via Web Audio API (no external file needed)
