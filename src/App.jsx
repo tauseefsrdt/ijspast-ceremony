@@ -1141,12 +1141,13 @@ export default function App() {
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2.5">
                 <a
-                  href={JOURNAL_INFO.portalUrl || "https://srmu-journal.netlify.app/"}
-                  target="_blank"
+                  href={isCelebrating ? undefined : (JOURNAL_INFO.portalUrl || "https://srmu-journal.netlify.app/")}
+                  target={isCelebrating ? undefined : "_blank"}
                   rel="noopener noreferrer"
-                  className="premium-button px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all inline-flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:scale-[1.02]"
+                  onClick={(e) => { if (isCelebrating) e.preventDefault(); }}
+                  className={`premium-button px-6 py-2.5 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider transition-all inline-flex items-center gap-2 shadow-lg ${isCelebrating ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none' : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-amber-500/30 hover:scale-[1.02]'}`}
                 >
-                  <PartyPopper className="w-4 h-4 text-slate-950" />
+                  <PartyPopper className={`w-4 h-4 ${isCelebrating ? 'text-slate-400' : 'text-slate-950'}`} />
                   <span>Enter Journal Portal</span>
                   <ArrowUpRight className="w-4 h-4" />
                 </a>
